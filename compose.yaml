@@ -1,0 +1,44 @@
+services:
+  oracle-snatch:
+    build: .
+    image: oracle-snatch:local
+    environment:
+      SUBNET_ID: ${SUBNET_ID:?Set SUBNET_ID in .env or the Stack environment}
+      ACCOUNT_TYPE: ${ACCOUNT_TYPE:-FREE}
+      PAYG_FREE_LIMITS_CONFIRMED: ${PAYG_FREE_LIMITS_CONFIRMED:-}
+      DISPLAY_NAME: ${DISPLAY_NAME:-snatch-arm}
+      OCPUS: ${OCPUS:-2}
+      MEMORY_GB: ${MEMORY_GB:-12}
+      BOOT_VOLUME_GB: ${BOOT_VOLUME_GB:-50}
+      INTERVAL_SECONDS: ${INTERVAL_SECONDS:-120}
+      COMPARTMENT_ID: ${COMPARTMENT_ID:-}
+      IMAGE_ID: ${IMAGE_ID:-}
+      OCI_PROFILE: ${OCI_PROFILE:-DEFAULT}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN:-}
+      TG_CHAT_ID: ${TG_CHAT_ID:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      OCI_CONFIG_FILE: /run/oci/config
+      SSH_PUBLIC_KEY_FILE: /run/secrets/ssh_authorized_keys.pub
+      STATE_FILE: /data/state.json
+      RESULT_FILE: /data/snatched.json
+    volumes:
+      - ${OCI_CONFIG_DIR:-./secrets/oci}:/run/oci:ro
+      - ${SSH_PUBLIC_KEY_HOST_PATH:-./secrets/ssh_authorized_keys.pub}:/run/secrets/ssh_authorized_keys.pub:ro
+      - ${DATA_DIR:-./data}:/data
+    user: "${PUID:-10001}:${PGID:-10001}"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    cpus: 0.50
+    mem_limit: 256m
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -1,4 +1,9 @@
+.env
 config.env
-snatched.json
-*.log
+secrets/
+data/
+.venv/
 __pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
